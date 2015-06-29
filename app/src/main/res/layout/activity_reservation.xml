@@ -1,0 +1,73 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ReservationActivity">
+
+    <RelativeLayout  android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:background="@color/white">
+
+        <TextView
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/TxtContact"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accepter"
+            android:id="@+id/boutonAccepter"
+            android:layout_marginTop="85dp"
+            android:layout_below="@+id/TxtContact"
+            android:textColor="@color/black"
+            android:background="@color/green"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:onClick="BoutonAccepter" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refuser"
+            android:id="@+id/boutonRefuser"
+            android:layout_alignTop="@+id/boutonAccepter"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/black"
+            android:background="@color/red"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:onClick="BoutonRefuser" />
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Repondre"
+            android:id="@+id/boutonRepondre"
+            android:onClick="BoutonRepondre"
+            android:layout_below="@+id/boutonAccepter"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp" />
+
+    </RelativeLayout>
+
+    <ProgressBar
+    style="?android:attr/progressBarStyleLarge"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/progressLoading"
+    android:minWidth="50000dp"
+    android:minHeight="50000dp"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:background="@color/black"
+    android:alpha="0.5"
+    android:visibility="invisible"
+        />
+</RelativeLayout>

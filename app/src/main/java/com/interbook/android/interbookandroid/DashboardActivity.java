@@ -1,48 +1,40 @@
 package com.interbook.android.interbookandroid;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
 
 import BLL.SessionManager;
 
 
-public class DashboardActivity extends ActionBarActivity {
+public class DashboardActivity extends Activity {
 
     // Session Manager Class
     SessionManager session;
+    ProgressBar progressLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        // Session class instance
         session = new SessionManager(getApplicationContext());
-
-        TextView lblName = (TextView) findViewById(R.id.emailText);
-
-        Toast.makeText(getApplicationContext(), "User Login Status: " + session.isLoggedIn(), Toast.LENGTH_LONG).show();
-
         session.checkLogin();
 
-        // get user data from session
+
         HashMap<String, String> user = session.getUserDetails();
+        String email = user.get(SessionManager.KEY_EMAIL);
 
-        // name
-        String email = user.get(SessionManager.KEY_NAME);
-
-        // displaying user data
+        TextView lblName = (TextView) findViewById(R.id.emailText);
         lblName.setText(Html.fromHtml("Email: <b>" + email + "</b>"));
 
-        lblName = (TextView) findViewById(R.id.emailText);
+        progressLoading = (ProgressBar) findViewById(R.id.progressLoading);
+        //progressLoading.setVisibility(View.VISIBLE);
     }
 
     public void BoutonSeDeconnecter(View v){

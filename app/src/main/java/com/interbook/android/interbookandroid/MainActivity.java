@@ -3,27 +3,25 @@ package com.interbook.android.interbookandroid;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
+import android.util.Base64;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Result;
-import com.google.android.gcm.server.Sender;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import BLL.SessionManager;
 import Model.Util;
@@ -33,19 +31,17 @@ import Parser.XMLParser;
 
 public class MainActivity extends Activity {
 
-    // Email, password edittext
-    EditText txtUsername, txtPassword;
+    EditText txtEmail, txtPassword;
+    String email, password;
 
-    // Session Manager Class
     SessionManager session;
-    List<Util> lu;
-    List<getUtil> tasks;
     ProgressBar pb;
+    Button b;
 
     String regId;
+    Util u;
     GoogleCloudMessaging gcm;
     Context context;
-    TextView outputRegid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,19 +49,9 @@ public class MainActivity extends Activity {
 
         session = new SessionManager(getApplicationContext());
 
+        b = (Button) findViewById(R.id.buttonSeconnecter);
         pb = (ProgressBar) findViewById(R.id.progressBar);
         pb.setVisibility(View.INVISIBLE);
-
-        outputRegid = (TextView) findViewById(R.id.outputRegid);
-        if (TextUtils.isEmpty(regId)) {
-            // Récupération du registerId du terminal ou enregistrement de ce dernier
-            regId = registerGCM();
-            outputRegid.append(regId);
-            Log.d("", "GCM RegId: " + regId);
-        } else {
-            outputRegid.append(session.getRegistrationId());
-            Toast.makeText(getApplicationContext(), "Déjà enregistré sur le GCM Server!", Toast.LENGTH_LONG).show();
-        }
 
         if(session.isLoggedIn())
         {
@@ -73,79 +59,26 @@ public class MainActivity extends Activity {
             startActivity(i);
         }
 
-
-        txtUsername = (EditText) findViewById(R.id.login);
+        txtEmail = (EditText) findViewById(R.id.login);
         txtPassword = (EditText) findViewById(R.id.password);
-
-        Toast.makeText(getApplicationContext(), "User Login Status: " + session.isLoggedIn(), Toast.LENGTH_LONG).show();
-
 
     }
 
-
     public void BoutonSeConnecter(View v){
 
-        String username = txtUsername.getText().toString();
-        String password = txtPassword.getText().toString();
+        email = txtEmail.getText().toString();
+        password = txtPassword.getText().toString();
 
-        if(username.trim().length() > 0 && password.trim().length() > 0){
+        if(email.trim().length() > 0 && password.trim().length() > 0){
 
             if (isOnline()) {
-                tasks = new ArrayList<>();
-                getUtil getu = new getUtil();
-                getu.execute("post", "http://interbook-dev.com/BLL/IBWS.asmx/GetUtilByEmailMdp", "particulier=true&email=ronan.pinsivy@gmail.com&mdp=130189");
+                new getUtilInBackground().execute();
             } else {
                 Toast.makeText(this, "Network isn't available", Toast.LENGTH_LONG).show();
             }
         }else{
             Toast.makeText(getApplicationContext(), "Please enter username and password", Toast.LENGTH_LONG).show();
         }
-    }
-
-    public String registerGCM() {
-        gcm = GoogleCloudMessaging.getInstance(this);
-        regId = getRegistrationId(context);
-
-        if (TextUtils.isEmpty(regId)) {
-            registerInBackground();
-            Log.d("","registerGCM - enregistrement auprès du GCM server OK - regId: " + regId);
-        } else {
-            Toast.makeText(getApplicationContext(), "RegId existe déjà. RegId: " + regId, Toast.LENGTH_LONG).show();
-        }
-        return regId;
-    }
-
-    private String getRegistrationId(Context context) {
-        final SharedPreferences prefs = getSharedPreferences(MainActivity.class.getSimpleName(), Context.MODE_PRIVATE);
-        String registrationId = prefs.getString("regId", "");
-        if (registrationId.isEmpty()) {
-            Log.i("", "registrationId non trouvé.");
-            return "";
-        }
-        return registrationId;
-    }
-
-    private void registerInBackground() {
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                String msg = "";
-                try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(context);
-                    }
-                    regId = gcm.register("200212735020");
-                    msg = "Terminal enregistré, register ID=" + regId;
-                    // On enregistre le registerId dans les SharedPreferences
-                    session.storeRegistrationId(regId);
-
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-                    Log.d("","Error: " + msg);
-                }
-                return msg;
-            }
-        }.execute(null, null, null);
     }
 
     protected boolean isOnline() {
@@ -158,24 +91,29 @@ public class MainActivity extends Activity {
         }
     }
 
-    private class getUtil extends AsyncTask<String, String, String> {
+    private class getUtilInBackground extends AsyncTask<String, String, String> {
 
         @Override
         protected void onPreExecute() {
-            if (tasks.size() == 0) {
-                pb.setVisibility(View.VISIBLE);
-            }
-            tasks.add(this);
+            b.setText("");
+            pb.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected String doInBackground(String... params) {
-            String content = "";
-            if (params[0] == "get")
-                content = HttpManager.getData(params[1]);
-            else if (params[0] == "post")
-                content = HttpManager.postData(params[1], params[2]);
-            return content;
+            try {
+                String secret = "interbook";
+                String message = password;
+                Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+                SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+                sha256_HMAC.init(secret_key);
+                String hash = Base64.encodeToString(sha256_HMAC.doFinal(message.getBytes()),Base64.DEFAULT).trim();
+                return HttpManager.postData("http://interbook-dev.com/BLL/IBWS.asmx/GetUtilByEmailMdp", "particulier=true&email=" + email + "&mdp=" + hash);
+            }
+            catch (Exception e){
+                return "Error";
+            }
+
         }
 
         @Override
@@ -183,33 +121,80 @@ public class MainActivity extends Activity {
 
             if (result != null) {
 
-                List<List<String>> genericList = XMLParser.parseFeed("UtilSimple", new String[]{"idu"}, result);
-                lu = new ArrayList<>();
-
-                for(List<String> lo : genericList) {
-                    lu.add(new Util(lo.get(0)));
+                List<List<String>> genericList = XMLParser.parseFeed("UtilSimple", new String[]{"IdU"}, result);
+                if(genericList.size() != 0) {
+                    u = new Util(genericList.get(0).get(0));
                 }
-
                 signIn();
             }
-
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
         }
     }
 
     protected void signIn() {
-        if(lu != null)
+        if(u != null)
         {
-            session.createLoginSession("Android Hive", "anroidhive@gmail.com");
+            session.createLoginSession(email, u.getId());
+
+            if (TextUtils.isEmpty(regId)) {
+                gcm = GoogleCloudMessaging.getInstance(this);
+                regId = session.getInPref("regid");
+
+                if (TextUtils.isEmpty(regId)) {
+                    new registerInBackground().execute();
+                } else {
+                    Toast.makeText(getApplicationContext(), "RegId existe deja. RegId: " + regId, Toast.LENGTH_LONG).show();
+                }
+            }
+        } else{
+            b.setText("Se connecter");
+            pb.setVisibility(View.INVISIBLE);
+            Toast.makeText(getApplicationContext(), "Username/Password is incorrect", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class registerInBackground extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                if (gcm == null) {
+                    gcm = GoogleCloudMessaging.getInstance(context);
+                }
+                regId = gcm.register("200212735020");
+                return HttpManager.postData("http://interbook-dev.com/BLL/IBWS.asmx/GetUtilAndroidByRegidIdu", "registerid=" + regId + "&idu=" + u.getId());
+
+            } catch (IOException ex) {
+                return "Error :" + ex.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result != null) {
+
+                List<List<String>> genericList = XMLParser.parseFeed("UtilAndroidSimple", new String[]{"Id_Util_Android"}, result);
+
+                if(genericList.size() == 0){
+                    new registerInBackgroundFinal().execute();
+                }
+            }
+        }
+    }
+
+    private class registerInBackgroundFinal extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            return HttpManager.postData("http://interbook-dev.com/BLL/IBWS.asmx/InsertLine_Util_Android", "id_Util_Android=0&registerid=" + regId + "&idu=" + session.getInPref("idu"));
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            session.storeInPref("regid", regId);
 
             Intent i = new Intent(getApplicationContext(), DashboardActivity.class);
             startActivity(i);
             finish();
-        } else{
-            Toast.makeText(getApplicationContext(), "Username/Password is incorrect", Toast.LENGTH_LONG).show();
         }
     }
 }

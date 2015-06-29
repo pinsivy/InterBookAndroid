@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-base\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a78183f30e769a98ab4820794f597763088d3065">
+        <dex dex="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\pre-dexed\debug\classes-2bb73ac1a9ef0d8fef651a50b55abfa32e159206.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ronan\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.2.0\support-annotations-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
+        <dex dex="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.0-0e0170fd02d45f34566ff3066ef375d62118afe3.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
+        <dex dex="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\pre-dexed\debug\classes-793cf1b70c6f2fa2fab9bdd9722bfbd0ba53ab3b.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
+        <dex dex="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\pre-dexed\debug\classes-6d4af4d931a6fb96ce3ad2b82a75ebb5f39c3b34.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\libs\internal_impl-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="57f2ab85c164ff1676ec64dee787981c046fab79">
+        <dex dex="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\pre-dexed\debug\internal_impl-22.2.0-09550de9d9eb42bdfdf374f565bec7402b076bc5.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ronan\Documents\InterBookAndroid\app\libs\gcm.server.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="10a1c27fc76ded608656efed121726df4f0ca192">
+        <dex dex="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\pre-dexed\debug\gcm.server-f097045c3c57d8a7d3c9e060d194fd9f80110219.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-gcm\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="8d736fefa22d896e84a268354b3ed48a42663150">
+        <dex dex="C:\Users\Ronan\Documents\InterBookAndroid\app\build\intermediates\pre-dexed\debug\classes-39ef5cc1e01725645b9564c61b55027db3de6a9b.jar" />
+    </item>
+
+</items>
